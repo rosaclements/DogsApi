@@ -1,5 +1,6 @@
 package rvc.entities;
 
+/**An enum representing possible statuses for police dogs.*/
 public enum DogStatus
 {
     IN_TRAINING("In training"),

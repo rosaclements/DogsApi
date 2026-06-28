@@ -1,5 +1,6 @@
 package rvc.entities;
 
+/**An enum representing reasons a police dog might have left service.*/
 public enum LeavingReason
 {
     TRANSFERRED("Transferred"),

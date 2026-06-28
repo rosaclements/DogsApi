@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+/**A database entity representing a police dog.*/
 @Entity
 @Data
 @AllArgsConstructor

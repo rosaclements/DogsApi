@@ -13,6 +13,7 @@ import.org.testng.annotations.Test;
 import rvc.entities.Dog;
 import rvc.dto.DogDTO;
 
+/**Unit tests for the DogServiceImpl class.*/
 public class DogServiceImplTest
 {
     @InjectMocks

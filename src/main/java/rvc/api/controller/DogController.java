@@ -8,6 +8,7 @@ import rvc.entities.DogDTO;
 
 import java.util.List;
 
+/**A front end controller class to handle http requests for the Dogs Api.*/
 @RestController
 @RequestMapping("/api/dogs")
 public class DogController

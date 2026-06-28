@@ -6,6 +6,7 @@ import rvc.repository.DogRepository;
 
 import java.util.Optional;
 
+/**This service contains methods for adding and retrieving dogs from the database via REST.*/
 @Service
 public class DogServiceImpl implements DogService
 {
@@ -16,6 +17,7 @@ public class DogServiceImpl implements DogService
         this.dogRepository = DogRepository;
     }
 
+    /**Returns a DTO representing a dog given the dog's id.*/
     @Override
     public DogDTO getDogById(int id) {
         Dog optionalDog = dogRepository.findById(id);
@@ -23,18 +25,21 @@ public class DogServiceImpl implements DogService
         else return convertDogToDTO(dog);
     }
 
+    /**Adds a dog to the database using the details in the given dto.*/
     @Override
     public void addDog(DogDTO dto) {
         Dog dog = dogRepository.create(Dog);
         saveDog(dto);
     }
 
+    /**Edits a dog in the database to have the details in the given DTO and saves it.*/
     @Override
     public void saveDog(DogDTO dto) {
         dog = updateDogFromDTO(dto);
         if(dog != null) dogRepository.save(Dog);
     }
 
+    /**Marks the dog with the given id as deleted in the database.*/
     @Override
     public void deleteDog(int id) {
         Dog dog = getDogById(id);
@@ -45,6 +50,7 @@ public class DogServiceImpl implements DogService
         }
     }
 
+    /**Returns DTOs detailing all dogs in the database, excluding those marked as deleted.*/
     public List<DogDTO> getAllDogs() {
         List<Dog> dogs = dogRepository.findAll();
         //filter out deleted items
@@ -52,6 +58,7 @@ public class DogServiceImpl implements DogService
         return convertDogsToDTOs(filteredDogs);
     }
 
+    /**Returns DTOs detailing all dogs in the database who meet the given filter criteria (excluding those marked as deleted).*/
     public List<Dog> getAllDogsWithFilter(String filterField, String filterValue)
     {
         List<Dog> dogs = dogRepository.findAll();

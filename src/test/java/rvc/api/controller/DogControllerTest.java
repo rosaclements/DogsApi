@@ -12,6 +12,7 @@ import.org.testng.annotations.BeforeMethod;
 import.org.testng.annotations.Test;
 import rvc.entities.Dog;
 
+/**Unit tests for the DogController class.*/
 public class DogControllerTest
 {
     @InjectMocks
