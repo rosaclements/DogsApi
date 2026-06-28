@@ -84,7 +84,7 @@ public class DogControllerTest
     @Test
     public void testGetDogsWithFilter()
     {
-        String body = this.restTemplate.getForObject("/api/dogs/dogs", String.class, "filter={Supplier=Riverside}");
+        String body = this.restTemplate.getForObject("/api/dogs/dogs", String.class, "filter={Supplier:Riverside}");
         Assert.assertTrue(body.contains("Fido"));
         Assert.assertFalse(body.contains("Rover"));
         Assert.assertTrue(body.contains("Rex"));
