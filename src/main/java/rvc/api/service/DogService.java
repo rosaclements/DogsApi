@@ -1,7 +1,6 @@
 package rvc.api.service;
 
 import java.util.List;
-import rvc.entities.Dog;
 import rvc.dto.DogDTO;
 
 /**This interface defines methods for adding and retrieving dogs from the database using the RESTful API.*/

@@ -14,8 +14,8 @@ import java.util.regex.Matcher;
 @RequestMapping("/api/dogs")
 public class DogController
 {
-    private DogService dogService;
-    private String filterRegex = "(name|breed|supplier)=(.*)";
+    private final DogService dogService;
+    private final String filterRegex = "(name|breed|supplier)=(.*)";
 
     @Autowired
     public DogController(DogService dogService)
@@ -34,11 +34,11 @@ public class DogController
     }
 
     @GetMapping("/{filter}")
-    public List<DogDTO> getAllDogs(@PathVariable String filterString) throws Exception {
-        if(Pattern.matches(filterRegex, filterString))
+    public List<DogDTO> getAllDogs(@PathVariable String filter) throws Exception {
+        if(Pattern.matches(filterRegex, filter))
         {
             Pattern pattern = Pattern.compile(filterRegex);
-            Matcher matcher = pattern.matcher(filterString);
+            Matcher matcher = pattern.matcher(filter);
             return dogService.getAllDogsWithFilter(matcher.group(1), matcher.group(2));
         }
         else throw new Exception("Filter must start with X= where X is name, breed, or supplier");

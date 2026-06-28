@@ -1,5 +1,7 @@
 package rvc.entities;
 
+import lombok.Getter;
+
 /**An enum representing reasons a police dog might have left service.*/
 public enum LeavingReason
 {
@@ -10,7 +12,8 @@ public enum LeavingReason
     KIA("KIA"),
     DIED("Died");
 
-    private String name;
+    @Getter
+    private final String name;
 
     LeavingReason(String name)
     {

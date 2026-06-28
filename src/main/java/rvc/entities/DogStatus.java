@@ -1,5 +1,7 @@
 package rvc.entities;
 
+import lombok.Getter;
+
 /**An enum representing possible statuses for police dogs.*/
 public enum DogStatus
 {
@@ -8,7 +10,8 @@ public enum DogStatus
     RETIRED("Retired"),
     LEFT("Left");
 
-    private String name;
+    @Getter
+    private final String name;
 
     DogStatus(String name)
     {

@@ -40,16 +40,17 @@ public class DogServiceImpl implements DogService
 
     /**Adds a dog to the database using the details in the given dto.*/
     @Override
-    public void addDog(DogDTO dto) {
+    public void addDog(DogDTO dto)
+    {
         Dog dog = new Dog();
-        dog = updateDogFromDTO(dto);
+        dog = updateDogFromDTO(dto, dog);
         if(dog != null) dogRepository.save(dog);
     }
 
     /**Edits a dog in the database to have the details in the given DTO and saves it.*/
     @Override
     public void saveDog(DogDTO dto) {
-        Dog dog = updateDogFromDTO(dto);
+        Dog dog = updateDogFromDTO(dto, null);
         if(dog != null) dogRepository.save(dog);
     }
 
@@ -122,11 +123,14 @@ public class DogServiceImpl implements DogService
         return dtos;
     }
 
-    private Dog updateDogFromDTO(DogDTO dto)
+    private Dog updateDogFromDTO(DogDTO dto, Dog dog)
     {
-        Optional<Dog> optionalDog = dogRepository.findById(dto.getId());
-        if(optionalDog.isEmpty()) return null;
-        Dog dog = optionalDog.get();
+        if(dog == null)
+        {
+            Optional<Dog> optionalDog = dogRepository.findById(dto.getId());
+            if (optionalDog.isEmpty()) return null;
+            dog = optionalDog.get();
+        }
 
         dog.setName(dto.getName());
         DogBreed breed = dogBreedRepository.findByName(dto.getBreed());
