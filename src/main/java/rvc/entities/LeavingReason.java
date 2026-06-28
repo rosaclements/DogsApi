@@ -9,4 +9,11 @@ public enum LeavingReason
     RETIRED_PUT_DOWN("Retired (put down)"),
     KIA("KIA"),
     DIED("Died");
+
+    private String name;
+
+    LeavingReason(String name)
+    {
+        this.name = name;
+    }
 }

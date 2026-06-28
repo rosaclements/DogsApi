@@ -2,11 +2,12 @@ package rvc.api.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import rvc.api.service.DogService.DogService;
-import rvc.entities.Dog;
-import rvc.entities.DogDTO;
+import rvc.api.service.DogService;
+import rvc.dto.DogDTO;
 
 import java.util.List;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 /**A front end controller class to handle http requests for the Dogs Api.*/
 @RestController
@@ -14,7 +15,7 @@ import java.util.List;
 public class DogController
 {
     private DogService dogService;
-    private filterRegex = "(name|breed|supplier)=(.*)";
+    private String filterRegex = "(name|breed|supplier)=(.*)";
 
     @Autowired
     public DogController(DogService dogService)
@@ -23,42 +24,41 @@ public class DogController
     }
 
     @GetMapping("/{id}")
-    public Dog getDogById(@PathVariable int id) {
-        return DogService.getDogById(id);
+    public DogDTO getDogById(@PathVariable int id) {
+        return dogService.getDogById(id);
     }
 
     @GetMapping
     public List<DogDTO> getAllDogs() {
-        return DogService.getAllDogs();
+        return dogService.getAllDogs();
     }
 
     @GetMapping("/{filter}")
-    public List<DogDTO> getAllDogs(@PathVariable String filterString)
-    {
+    public List<DogDTO> getAllDogs(@PathVariable String filterString) throws Exception {
         if(Pattern.matches(filterRegex, filterString))
         {
             Pattern pattern = Pattern.compile(filterRegex);
             Matcher matcher = pattern.matcher(filterString);
-            return DogService.getAllDogsWithFilter(matcher.group(1), matcher.group(2));
+            return dogService.getAllDogsWithFilter(matcher.group(1), matcher.group(2));
         }
         else throw new Exception("Filter must start with X= where X is name, breed, or supplier");
     }
 
     @PostMapping
     public void addDog(@RequestBody DogDTO dto) {
-        DogService.addDog(dto);
+        dogService.addDog(dto);
     }
 
     @PutMapping("/{id}")
-    public void updateDog(@PathVariable int id, @RequestBody DogDTO dto) {
-        DogDTO existingDog = DogService.getDogById(id);
+    public void updateDog(@PathVariable int id, @RequestBody DogDTO dto) throws Exception {
+        DogDTO existingDog = dogService.getDogById(id);
         if (existingDog != null)
-            DogService.saveDog(dto);
+            dogService.saveDog(dto);
         else throw new Exception("Cannot find dog with id "+id+" to update");
     }
 
     @DeleteMapping("/{id}")
     public void deleteDog(@PathVariable int id) {
-        DogService.deleteDog(id);
+        dogService.deleteDog(id);
     }
 }

@@ -20,7 +20,7 @@ public class DogDTO
     private String currentStatus;
     private Date leavingDate;
     private String leavingReason;
-    private String kennelingCharacteristic;
+    private String kennellingCharacteristic;
 
     private boolean deleted;
 }

@@ -9,11 +9,13 @@ import javax.persistence.Id;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**A database entity representing a police dog.*/
 @Entity
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class Dog
 {
     @Id
@@ -31,4 +33,6 @@ public class Dog
     private Date leavingDate;
     private LeavingReason leavingReason;
     private String kennellingCharacteristic;
+
+    private boolean deleted;
 }

@@ -1,5 +1,6 @@
 package rvc.api.service;
 
+import java.util.List;
 import rvc.entities.Dog;
 import rvc.dto.DogDTO;
 

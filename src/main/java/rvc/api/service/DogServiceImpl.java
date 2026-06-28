@@ -1,79 +1,94 @@
 package rvc.api.service;
 
-import rvc.entities.Dog;
-import rvc.dto.DogDTO;
-import rvc.repository.DogRepository;
-
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+import rvc.entities.*;
+import rvc.dto.DogDTO;
+import rvc.repository.*;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**This service contains methods for adding and retrieving dogs from the database via REST.*/
 @Service
 public class DogServiceImpl implements DogService
 {
-    private final dogRepository dogRepository;
+    private final DogRepository dogRepository;
+    private final DogBreedRepository dogBreedRepository;
+    private final DogSupplierRepository dogSupplierRepository;
 
     @Autowired
-    public DogServiceImpl(dogRepository DogRepository) {
-        this.dogRepository = DogRepository;
+    public DogServiceImpl(DogRepository dogRepository, DogBreedRepository dogBreedRepository, DogSupplierRepository dogSupplierRepository)
+    {
+        this.dogRepository = dogRepository;
+        this.dogBreedRepository = dogBreedRepository;
+        this.dogSupplierRepository = dogSupplierRepository;
     }
 
     /**Returns a DTO representing a dog given the dog's id.*/
     @Override
-    public DogDTO getDogById(int id) {
-        Dog optionalDog = dogRepository.findById(id);
-        if(dog == null) reurn null;
-        else return convertDogToDTO(dog);
+    public DogDTO getDogById(int id)
+    {
+        Optional<Dog> optionalDog = dogRepository.findById(id);
+        if(optionalDog.isEmpty()) return null;
+        else return convertDogToDTO(optionalDog.get());
     }
 
     /**Adds a dog to the database using the details in the given dto.*/
     @Override
     public void addDog(DogDTO dto) {
-        Dog dog = dogRepository.create(Dog);
-        saveDog(dto);
+        Dog dog = new Dog();
+        dog = updateDogFromDTO(dto);
+        if(dog != null) dogRepository.save(dog);
     }
 
     /**Edits a dog in the database to have the details in the given DTO and saves it.*/
     @Override
     public void saveDog(DogDTO dto) {
-        dog = updateDogFromDTO(dto);
-        if(dog != null) dogRepository.save(Dog);
+        Dog dog = updateDogFromDTO(dto);
+        if(dog != null) dogRepository.save(dog);
     }
 
     /**Marks the dog with the given id as deleted in the database.*/
     @Override
     public void deleteDog(int id) {
-        Dog dog = getDogById(id);
-        if(dog != null)
-        {
-            dog.setDeleted(true);
-            saveDog();
-        }
+        Optional<Dog> optionalDog = dogRepository.findById(id);
+        if(optionalDog.isEmpty()) return;
+
+        Dog dog = optionalDog.get();
+        dog.setDeleted(true);
+        dogRepository.save(dog);
     }
 
     /**Returns DTOs detailing all dogs in the database, excluding those marked as deleted.*/
     public List<DogDTO> getAllDogs() {
         List<Dog> dogs = dogRepository.findAll();
         //filter out deleted items
-        List filteredDogs = dogs.stream().filter(dog -> !dog.isDeleted());
+        List<Dog> filteredDogs = dogs.stream()
+                .filter(dog -> !dog.isDeleted())
+                .collect(Collectors.toList());
         return convertDogsToDTOs(filteredDogs);
     }
 
     /**Returns DTOs detailing all dogs in the database who meet the given filter criteria (excluding those marked as deleted).*/
-    public List<Dog> getAllDogsWithFilter(String filterField, String filterValue)
+    public List<DogDTO> getAllDogsWithFilter(String filterField, String filterValue)
     {
         List<Dog> dogs = dogRepository.findAll();
-        Function<Dog, boolean> filterFunction;
-        if("name".equals(filterField))
-            filterFunction = dog -> dog.getName().contains(filterValue);
-        else if("breed".equals(filterField))
-            filterFunction = dog -> dog.getBreed().getName().contains(filterValue);
-        else if("supplier".equals(filterField))
-            filterFunction = dog.getSupplier..getName().contains(filterValue);
-        else filterFunction = dog -> true;
+        Predicate<Dog> filterFunction = switch (filterField) {
+            case "name" -> (dog -> dog.getName().contains(filterValue));
+            case "breed" -> dog -> dog.getBreed().getName().contains(filterValue);
+            case "supplier" -> dog -> dog.getSupplier().getName().contains(filterValue);
+            case null, default -> dog -> true;
+        };
         //filter out deleted items as well as using the given filter
-        List filteredDogs = dogs.stream()
+        List<Dog> filteredDogs = dogs.stream()
                 .filter(dog -> !dog.isDeleted())
-                .filter(filterFunction);
+                .filter(filterFunction)
+                .collect(Collectors.toList());
         return convertDogsToDTOs(filteredDogs);
     }
 
@@ -88,45 +103,46 @@ public class DogServiceImpl implements DogService
         dto.setGender(dog.getGender().toString());
         dto.setBirthDate(dog.getBirthDate());
         dto.setDateAcquired(dog.getDateAcquired());
-        dto.setCurrentStatus(dog.getCurrentStatus.toString());
+        dto.setCurrentStatus(dog.getCurrentStatus().toString());
         dto.setLeavingDate(dog.getLeavingDate());
         dto.setLeavingReason(dog.getLeavingReason().toString());
-        dto.setKennelingCharacteristic(dog.getKenellingCharacteristic());
+        dto.setKennellingCharacteristic(dog.getKennellingCharacteristic());
 
         return dto;
     }
 
 
-    private DogDTO convertDogsToDTO(List<Dog> dogs)
+    private List<DogDTO> convertDogsToDTOs(List<Dog> dogs)
     {
         List<DogDTO> dtos = new ArrayList<>();
         for(Dog dog:dogs)
         {
-            dtos.add(convertDogToDTO(dog))
+            dtos.add(convertDogToDTO(dog));
         }
         return dtos;
     }
 
     private Dog updateDogFromDTO(DogDTO dto)
     {
-        Dog dog = getDogById(dto.getId());
-        if(dog == null) return null;
+        Optional<Dog> optionalDog = dogRepository.findById(dto.getId());
+        if(optionalDog.isEmpty()) return null;
+        Dog dog = optionalDog.get();
 
         dog.setName(dto.getName());
-        Breed = dogRepository.findBreedByName(dto.getBreed().getName()));
+        DogBreed breed = dogBreedRepository.findByName(dto.getBreed());
         dog.setBreed(breed);
-        Supplier = dogRepository.findSupplierByName(dto.getSupplier().getName()));
+        Supplier supplier = dogSupplierRepository.findByName(dto.getSupplier());
         dog.setSupplier(supplier);
-        Gender = Gender.getByName(dto.getGender());
+        Gender gender = Gender.valueOf(dto.getGender());
         if(gender != null) dog.setGender(gender);
         dog.setBirthDate(dto.getBirthDate());
         dog.setDateAcquired(dto.getDateAcquired());
-        DogStatus status = DogStatus.getByName(dto.getCurrentStatus());
+        DogStatus status = DogStatus.valueOf(dto.getCurrentStatus());
         if(status != null) dog.setCurrentStatus(status);
         dog.setLeavingDate(dto.getLeavingDate());
-        LeavingReason reason = LeavingReason.getByName(dto.getLeavingReason());
+        LeavingReason reason = LeavingReason.valueOf(dto.getLeavingReason());
         if(reason != null) dog.setLeavingReason(reason);
-        dog.setKennelingCharacteristic(dto.getKenellingCharacteristic());
+        dog.setKennellingCharacteristic(dto.getKennellingCharacteristic());
 
         return dog;
     }

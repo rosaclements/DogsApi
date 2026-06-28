@@ -7,4 +7,11 @@ public enum DogStatus
     IN_SERVICE("In service"),
     RETIRED("Retired"),
     LEFT("Left");
+
+    private String name;
+
+    DogStatus(String name)
+    {
+        this.name = name;
+    }
 }
